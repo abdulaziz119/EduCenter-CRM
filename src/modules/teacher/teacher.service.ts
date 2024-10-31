@@ -11,7 +11,7 @@ import { SingleResponse, TeacherUpdateDto } from './dto/teacher.dto';
 import { TeacherEntity } from '../../entity/teacher.entity';
 import { PaginationResponse } from '../../utils/pagination.response';
 import { getPaginationResponse } from '../../utils/pagination.builder';
-import { ObjectId } from 'mongodb';
+import { ObjectId, UpdateResult } from 'mongodb';
 import { ParamIdDto } from '../../utils/dto/params.dto';
 import { PaginateParamsDto } from '../../utils/dto/paginate.dto';
 
@@ -23,12 +23,13 @@ export class TeacherService {
   ) {}
 
   async create(payload: any): Promise<SingleResponse<TeacherEntity>> {
+    const objectId = new ObjectId(payload.groupId);
     const TeacherModel = new TeacherEntity();
     TeacherModel.first_name = payload.first_name;
     TeacherModel.last_name = payload.last_name;
     TeacherModel.birthDate = payload.birthDate;
     TeacherModel.phone = payload.phone;
-    TeacherModel.courses = payload?.courses;
+    TeacherModel.groupId = objectId;
     try {
       return { result: await this.teacherRepo.save(TeacherModel) };
     } catch (error) {
@@ -113,6 +114,15 @@ export class TeacherService {
   async delete(payload: ParamIdDto): Promise<any> {
     const { id } = payload;
     const objectId = new ObjectId(id);
-    await this.teacherRepo.softDelete({ _id: objectId });
+    const teacher = await this.teacherRepo.findOne({
+      where: { _id: objectId },
+    });
+
+    if (!teacher) {
+      throw new NotFoundException('Teacher not found');
+    }
+
+    teacher.deleted_at = new Date();
+    await this.teacherRepo.save(teacher);
   }
 }

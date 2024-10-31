@@ -1,26 +1,25 @@
 import {
-  IsArray,
-  IsDate,
+  IsDateString,
   IsDefined,
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsPhoneNumber,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
 
 export class TeacherCreateDto {
+  @IsDefined()
   @IsString()
   @MinLength(2)
   @MaxLength(50)
-  firstName: string;
-
+  first_name: string;
+  @IsDefined()
   @IsString()
   @MinLength(2)
   @MaxLength(50)
-  lastName: string;
+  last_name: string;
   @IsDefined()
   @IsNumber()
   phone: number;
@@ -28,29 +27,32 @@ export class TeacherCreateDto {
   @IsString()
   birthDate: Date;
   @IsOptional()
-  @IsArray()
-  courses: number[];
+  @IsString()
+  groupId: string;
 }
 
 export class TeacherUpdateDto {
   @IsDefined()
-  id: number;
+  @IsString()
+  id: string;
   @IsOptional()
+  @IsString()
   @IsNotEmpty()
   first_name: string;
   @IsOptional()
+  @IsString()
   @IsNotEmpty()
   last_name: string;
   @IsOptional()
+  @IsNumber()
   @IsNotEmpty()
-  @IsPhoneNumber('UZ')
   phone: number;
   @IsOptional()
-  @IsNotEmpty()
+  @IsDateString()
   birthDate: Date;
   @IsOptional()
-  @IsNotEmpty()
-  courses: number[];
+  @IsString()
+  groupId: number;
 }
 export interface SingleResponse<T> {
   result: T;

@@ -19,6 +19,6 @@ export class StudentEntity extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isPaid: boolean;
 
-  @Column({ nullable: true })
-  groupId?: ObjectId;
+  @Column()
+  groupId: ObjectId;
 }

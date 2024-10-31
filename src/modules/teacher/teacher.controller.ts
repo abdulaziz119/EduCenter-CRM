@@ -49,7 +49,7 @@ export class TeacherController {
 
   @Post('/remove')
   @HttpCode(204)
-  async delete(@Body() body: ParamIdDto): Promise<UpdateResult> {
+  async delete(@Body() body: ParamIdDto): Promise<any> {
     return this.teacherService.delete(body);
   }
 }
