@@ -5,16 +5,22 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPhoneNumber,
   IsString,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 
 export class TeacherCreateDto {
-  @IsDefined()
   @IsString()
-  first_name: string;
-  @IsDefined()
+  @MinLength(2)
+  @MaxLength(50)
+  firstName: string;
+
   @IsString()
-  last_name: string;
+  @MinLength(2)
+  @MaxLength(50)
+  lastName: string;
   @IsDefined()
   @IsNumber()
   phone: number;
@@ -37,6 +43,7 @@ export class TeacherUpdateDto {
   last_name: string;
   @IsOptional()
   @IsNotEmpty()
+  @IsPhoneNumber('UZ')
   phone: number;
   @IsOptional()
   @IsNotEmpty()

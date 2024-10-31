@@ -7,12 +7,10 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { ObjectId } from 'mongodb';
+import { BaseEntity } from './base-entity';
 
 @Entity('students')
-export class StudentEntity {
-  @ObjectIdColumn()
-  id: ObjectId;
-
+export class StudentEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   first_name: string;
 
@@ -25,15 +23,9 @@ export class StudentEntity {
   @Column({ type: 'varchar' })
   birthDate: Date;
 
+  @Column({ type: 'boolean', default: false })
+  isPaid: boolean;
+
   @Column({ nullable: true })
   groupId?: ObjectId;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
-
-  @DeleteDateColumn()
-  deleted_at: Date;
 }

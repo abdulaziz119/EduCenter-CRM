@@ -11,10 +11,9 @@ import { SingleResponse, TeacherUpdateDto } from './dto/teacher.dto';
 import { TeacherEntity } from '../../entity/teacher.entity';
 import { PaginationResponse } from '../../utils/pagination.response';
 import { getPaginationResponse } from '../../utils/pagination.builder';
-import { ObjectId, UpdateResult } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { ParamIdDto } from '../../utils/dto/params.dto';
 import { PaginateParamsDto } from '../../utils/dto/paginate.dto';
-import { ResponseHelper } from '../../helpers/response.helper';
 
 @Injectable()
 export class TeacherService {
@@ -69,7 +68,7 @@ export class TeacherService {
     try {
       const objectId = new ObjectId(id);
       const teacher = await this.teacherRepo.findOne({
-        where: { id: objectId },
+        where: { _id: objectId },
       });
       if (!teacher) {
         throw new NotFoundException(`Teacher with ID ${id} not found`);
@@ -89,7 +88,7 @@ export class TeacherService {
     const { id } = payload;
     const objectId = new ObjectId(id);
     const TemplatePortion = await this.teacherRepo.findOne({
-      where: { id: objectId },
+      where: { _id: objectId },
     });
 
     if (!TemplatePortion) {
@@ -114,6 +113,6 @@ export class TeacherService {
   async delete(payload: ParamIdDto): Promise<any> {
     const { id } = payload;
     const objectId = new ObjectId(id);
-    await this.teacherRepo.softDelete({ id: objectId });
+    await this.teacherRepo.softDelete({ _id: objectId });
   }
 }

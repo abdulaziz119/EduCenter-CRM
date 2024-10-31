@@ -1,18 +1,9 @@
-import {
-  Entity,
-  ObjectIdColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { ObjectId } from 'mongodb';
+import { BaseEntity } from './base-entity';
 
 @Entity('teachers')
-export class TeacherEntity {
-  @ObjectIdColumn()
-  id: ObjectId;
-
+export class TeacherEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   first_name: string;
 
@@ -27,13 +18,4 @@ export class TeacherEntity {
 
   @Column({ type: 'array' })
   courses: ObjectId[];
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
-
-  @DeleteDateColumn()
-  deleted_at: Date;
 }

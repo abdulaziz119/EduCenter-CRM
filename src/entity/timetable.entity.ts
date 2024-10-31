@@ -7,12 +7,10 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { ObjectId } from 'mongodb';
+import { BaseEntity } from './base-entity';
 
 @Entity('timetable')
-export class TimetableEntity {
-  @ObjectIdColumn()
-  id: ObjectId;
-
+export class TimetableEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   date: Date;
 
@@ -24,13 +22,4 @@ export class TimetableEntity {
 
   @Column()
   teacherId: ObjectId;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
-
-  @DeleteDateColumn()
-  deleted_at: Date;
 }

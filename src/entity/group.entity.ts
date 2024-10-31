@@ -1,18 +1,9 @@
-import {
-  Entity,
-  ObjectIdColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { ObjectId } from 'mongodb';
+import { BaseEntity } from './base-entity';
 
 @Entity('groups')
-export class GroupEntity {
-  @ObjectIdColumn()
-  id: ObjectId;
-
+export class GroupEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
@@ -24,13 +15,4 @@ export class GroupEntity {
 
   @Column({ type: 'array' })
   courses: ObjectId[];
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
-
-  @DeleteDateColumn()
-  deleted_at: Date;
 }

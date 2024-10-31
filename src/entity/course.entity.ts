@@ -1,33 +1,14 @@
-import {
-  Entity,
-  ObjectIdColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
-import { ObjectId } from 'mongodb';
+import { Entity, Column } from 'typeorm';
+import { BaseEntity } from './base-entity';
 
 @Entity('courses')
-export class CourseEntity {
-  @ObjectIdColumn()
-  id: ObjectId;
-
+export class CourseEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
   @Column({ type: 'varchar', nullable: true })
   description?: string;
 
-  @Column({ nullable: true })
-  parentId?: ObjectId;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
-
-  @DeleteDateColumn()
-  deleted_at: Date;
+  @Column({ type: 'decimal', nullable: true })
+  monthlyFee?: number;
 }
