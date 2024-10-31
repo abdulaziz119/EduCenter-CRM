@@ -16,6 +16,6 @@ export class TeacherEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   birthDate: Date;
 
-  @Column({ type: 'array' })
-  courses: ObjectId[];
+  @Column({ nullable: true })
+  groupId?: ObjectId;
 }

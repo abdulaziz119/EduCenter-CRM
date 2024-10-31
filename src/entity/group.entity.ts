@@ -7,12 +7,6 @@ export class GroupEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'array' })
-  students: ObjectId[];
-
-  @Column({ type: 'array' })
-  teachers: ObjectId[];
-
-  @Column({ type: 'array' })
-  courses: ObjectId[];
+  @Column({ nullable: true })
+  courses: ObjectId;
 }
