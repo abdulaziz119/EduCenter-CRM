@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
@@ -20,12 +21,15 @@ import {
 } from './dto/student.dto';
 import { StudentEntity } from '../../entity/student.entity';
 import { Md5 } from 'ts-md5';
+import { GroupEntity } from '../../entity/group.entity';
 
 @Injectable()
 export class StudentService {
   constructor(
     @Inject(MODELS.STUDENTS)
     private readonly studentRepo: Repository<StudentEntity>,
+    @Inject(MODELS.GROUPS)
+    private readonly groupRepo: Repository<GroupEntity>,
   ) {}
 
   async create(
@@ -64,39 +68,75 @@ export class StudentService {
 
   async findAll(
     payload: PaginateParamsDto,
-  ): Promise<PaginationResponse<StudentEntity[]>> {
-    const page = payload.page || 1;
-    const limit = payload.limit || 10;
-    const count = await this.studentRepo.count();
+  ): Promise<
+    PaginationResponse<(StudentEntity & { group?: GroupEntity | null })[]>
+  > {
+    const page: number = payload.page || 1;
+    const limit: number = payload.limit || 10;
+    const count: number = await this.studentRepo.count();
+
     if (!count) return getPaginationResponse([], page, limit, count);
-    const serverKeys = await this.studentRepo.find({
-      where: {},
+
+    const students: StudentEntity[] = await this.studentRepo.find({
       skip: (page - 1) * limit,
       take: limit,
     });
-    if (limit && !isNaN(page))
-      return getPaginationResponse<StudentEntity>(
-        serverKeys,
-        page,
-        limit,
-        count,
-      );
+
+    const studentsWithGroups = await Promise.all(
+      students.map(async (student) => {
+        const group: GroupEntity = await this.groupRepo.findOne({
+          where: { _id: student.groupId },
+        });
+
+        return {
+          ...student,
+          group: group || null,
+        };
+      }),
+    );
+
+    return getPaginationResponse(studentsWithGroups, page, limit, count);
   }
 
-  async findOne(body: ParamIdDto): Promise<SingleResponse<StudentEntity>> {
+  async findOne(
+    body: ParamIdDto,
+  ): Promise<
+    SingleResponse<
+      StudentEntity & { group?: GroupEntity | GroupEntity[] | null }
+    >
+  > {
     const { id } = body;
+
     try {
+      if (!ObjectId.isValid(id)) {
+        throw new BadRequestException(`Invalid ID format: ${id}`);
+      }
+
       const objectId: ObjectId = new ObjectId(id);
       const student: StudentEntity = await this.studentRepo.findOne({
         where: { _id: objectId },
       });
+
       if (!student) {
         throw new NotFoundException(`Student with ID ${id} not found`);
       }
-      return { result: student };
+
+      const group: GroupEntity = await this.groupRepo.findOne({
+        where: { _id: student.groupId },
+      });
+
+      return {
+        result: {
+          ...student,
+          group: group || null,
+        },
+      };
     } catch (error) {
       throw new HttpException(
-        { message: `Student with ID ${id} not found`, error: error.detail },
+        {
+          message: `Failed to get student with ID ${id}`,
+          error: error.message,
+        },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

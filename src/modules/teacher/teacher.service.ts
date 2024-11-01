@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
@@ -20,12 +21,15 @@ import { ParamIdDto } from '../../utils/dto/params.dto';
 import { PaginateParamsDto } from '../../utils/dto/paginate.dto';
 import { AuthorizationService } from '../auth/auth.service';
 import { Md5 } from 'ts-md5';
+import { GroupEntity } from '../../entity/group.entity';
 
 @Injectable()
 export class TeacherService {
   constructor(
     @Inject(MODELS.TEACHERS)
     private readonly teacherRepo: Repository<TeacherEntity>,
+    @Inject(MODELS.GROUPS)
+    private readonly groupRepo: Repository<GroupEntity>,
   ) {}
 
   async create(
@@ -63,39 +67,73 @@ export class TeacherService {
 
   async findAll(
     payload: PaginateParamsDto,
-  ): Promise<PaginationResponse<TeacherEntity[]>> {
+  ): Promise<
+    PaginationResponse<
+      (TeacherEntity & { group?: GroupEntity | GroupEntity[] | null })[]
+    >
+  > {
     const page: number = payload.page || 1;
     const limit: number = payload.limit || 10;
     const count: number = await this.teacherRepo.count();
+
     if (!count) return getPaginationResponse([], page, limit, count);
-    const serverKeys = await this.teacherRepo.find({
-      where: {},
+
+    const teachers: TeacherEntity[] = await this.teacherRepo.find({
       skip: (page - 1) * limit,
       take: limit,
     });
-    if (limit && !isNaN(page))
-      return getPaginationResponse<TeacherEntity>(
-        serverKeys,
-        page,
-        limit,
-        count,
-      );
+
+    const teachersWithGroups = await Promise.all(
+      teachers.map(async (teacher: TeacherEntity) => {
+        const group: GroupEntity[] = await this.groupRepo.find({
+          where: { _id: teacher.groupId },
+        });
+
+        return {
+          ...teacher,
+          group: group || null,
+        };
+      }),
+    );
+
+    return getPaginationResponse(teachersWithGroups, page, limit, count);
   }
 
-  async findOne(body: ParamIdDto): Promise<SingleResponse<TeacherEntity>> {
+  async findOne(
+    body: ParamIdDto,
+  ): Promise<SingleResponse<TeacherEntity & { group?: GroupEntity | null }>> {
     const { id } = body;
+
     try {
+      if (!ObjectId.isValid(id)) {
+        throw new BadRequestException(`Invalid ID format: ${id}`);
+      }
+
       const objectId: ObjectId = new ObjectId(id);
       const teacher: TeacherEntity = await this.teacherRepo.findOne({
         where: { _id: objectId },
       });
+
       if (!teacher) {
         throw new NotFoundException(`Teacher with ID ${id} not found`);
       }
-      return { result: teacher };
+
+      const group: GroupEntity = await this.groupRepo.findOne({
+        where: { _id: teacher.groupId },
+      });
+
+      return {
+        result: {
+          ...teacher,
+          group: group || null,
+        },
+      };
     } catch (error) {
       throw new HttpException(
-        { message: `Failed get with ID ${id}`, error: error.detail },
+        {
+          message: `Failed to get teacher with ID ${id}`,
+          error: error.message,
+        },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
