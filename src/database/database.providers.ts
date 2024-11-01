@@ -7,6 +7,8 @@ import { GroupEntity } from '../entity/group.entity';
 import { StudentEntity } from '../entity/student.entity';
 import { TeacherEntity } from '../entity/teacher.entity';
 import { TimetableEntity } from '../entity/timetable.entity';
+import { GradesEntity } from '../entity/grades.entity';
+import { PaymentEntity } from '../entity/payment.entity';
 
 export const databaseProviders = [
   {
@@ -27,6 +29,8 @@ export const databaseProviders = [
           StudentEntity,
           TeacherEntity,
           TimetableEntity,
+          GradesEntity,
+          PaymentEntity,
         ],
         // extra: {
         //   timezone: 'UTC',
