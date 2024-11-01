@@ -17,7 +17,7 @@ export class GroupCreateDto {
   @IsDefined()
   @IsBoolean()
   isActive: boolean;
-  @IsOptional()
+  @IsDefined()
   @IsString()
   courseId: string;
 }

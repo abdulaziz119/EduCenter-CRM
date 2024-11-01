@@ -8,11 +8,17 @@ export class TimetableEntity extends BaseEntity {
   date: Date;
 
   @Column({ type: 'varchar' })
-  lesson: string;
+  startTime: Date;
+
+  @Column({ type: 'varchar' })
+  endTime: Date;
 
   @Column()
   groupId: ObjectId;
 
   @Column()
   teacherId: ObjectId;
+
+  @Column()
+  courseId: ObjectId;
 }
