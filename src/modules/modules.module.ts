@@ -5,6 +5,7 @@ import { StudentModule } from './student/student.module';
 import { GroupModule } from './group/group.module';
 import { CourseModule } from './course/course.module';
 import { TimetableModule } from './timetable/timetable.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TimetableModule } from './timetable/timetable.module';
     GroupModule,
     CourseModule,
     TimetableModule,
+    AuthModule,
   ],
 })
 export class ModulesModule {}

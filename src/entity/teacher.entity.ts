@@ -14,6 +14,9 @@ export class TeacherEntity extends BaseEntity {
   phone: number;
 
   @Column({ type: 'varchar' })
+  password: string;
+
+  @Column({ type: 'varchar' })
   birthDate: Date;
 
   @Column({ nullable: true })

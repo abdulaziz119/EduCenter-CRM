@@ -1,27 +1,26 @@
-import {
-  IsBoolean,
-  IsDefined,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDefined, IsOptional, IsString, IsDateString } from 'class-validator';
 
 export class TimetableCreateDto {
   @IsDefined()
-  @IsString()
+  @IsDateString()
   date: Date;
+
   @IsDefined()
-  @IsString()
+  @IsDateString()
   startTime: Date;
+
   @IsDefined()
-  @IsString()
+  @IsDateString()
   endTime: Date;
+
   @IsDefined()
   @IsString()
   groupId: string;
+
   @IsDefined()
   @IsString()
   teacherId: string;
+
   @IsDefined()
   @IsString()
   courseId: string;
@@ -31,31 +30,32 @@ export class TimetableUpdateDto {
   @IsDefined()
   @IsString()
   id: string;
+
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  date: Date;
+  @IsDateString()
+  date?: string;
+
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  startTime: Date;
+  @IsDateString()
+  startTime?: string;
+
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  endTime: Date;
+  @IsDateString()
+  endTime?: string;
+
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
-  groupId: Date;
+  groupId?: string;
+
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
-  teacherId: Date;
+  teacherId?: string;
+
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
-  courseId: Date;
+  courseId?: string;
 }
+
 export interface SingleResponse<T> {
   result: T;
 }

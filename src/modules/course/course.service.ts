@@ -40,7 +40,7 @@ export class CourseService {
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to create a Teacher',
+          message: 'Failed to create a Course',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -73,16 +73,16 @@ export class CourseService {
     const { id } = body;
     try {
       const objectId: ObjectId = new ObjectId(id);
-      const teacher: CourseEntity = await this.courseRepo.findOne({
+      const course: CourseEntity = await this.courseRepo.findOne({
         where: { _id: objectId },
       });
-      if (!teacher) {
-        throw new NotFoundException(`Teacher with ID ${id} not found`);
+      if (!course) {
+        throw new NotFoundException(`Course with ID ${id} not found`);
       }
-      return { result: teacher };
+      return { result: course };
     } catch (error) {
       throw new HttpException(
-        { message: `Failed get with ID ${id}`, error: error.detail },
+        { message: `Failed to get course with ID ${id}`, error: error.message },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -93,22 +93,22 @@ export class CourseService {
   ): Promise<SingleResponse<CourseEntity>> {
     const { id } = payload;
     const objectId: ObjectId = new ObjectId(id);
-    const TemplatePortion: CourseEntity = await this.courseRepo.findOne({
+    const CoursePortion: CourseEntity = await this.courseRepo.findOne({
       where: { _id: objectId },
     });
 
-    if (!TemplatePortion) {
-      throw new NotFoundException(`Template with ID ${id} not found`);
+    if (!CoursePortion) {
+      throw new NotFoundException(`Course with ID ${id} not found`);
     }
     try {
-      Object.entries(TemplatePortion).forEach(([key, value]) => {
-        TemplatePortion[key] = payload[key] || value;
+      Object.entries(CoursePortion).forEach(([key, value]) => {
+        CoursePortion[key] = payload[key] || value;
       });
-      return { result: await this.courseRepo.save(TemplatePortion) };
+      return { result: await this.courseRepo.save(CoursePortion) };
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to update the Template Portion',
+          message: 'Failed to update the Course',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -119,15 +119,15 @@ export class CourseService {
   async delete(payload: ParamIdDto): Promise<any> {
     const { id } = payload;
     const objectId: ObjectId = new ObjectId(id);
-    const teacher: CourseEntity = await this.courseRepo.findOne({
+    const course: CourseEntity = await this.courseRepo.findOne({
       where: { _id: objectId },
     });
 
-    if (!teacher) {
-      throw new NotFoundException('Teacher not found');
+    if (!course) {
+      throw new NotFoundException('Course not found');
     }
 
-    teacher.deleted_at = new Date();
-    await this.courseRepo.save(teacher);
+    course.deleted_at = new Date();
+    await this.courseRepo.save(course);
   }
 }

@@ -37,7 +37,7 @@ export class GroupService {
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to create a Teacher',
+          message: 'Failed to create the group',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -65,13 +65,13 @@ export class GroupService {
     const { id } = body;
     try {
       const objectId: ObjectId = new ObjectId(id);
-      const teacher: GroupEntity = await this.groupRepo.findOne({
+      const group: GroupEntity = await this.groupRepo.findOne({
         where: { _id: objectId },
       });
-      if (!teacher) {
-        throw new NotFoundException(`Teacher with ID ${id} not found`);
+      if (!group) {
+        throw new NotFoundException(`Group with ID ${id} not found`);
       }
-      return { result: teacher };
+      return { result: group };
     } catch (error) {
       throw new HttpException(
         { message: `Failed get with ID ${id}`, error: error.detail },
@@ -83,22 +83,22 @@ export class GroupService {
   async update(payload: GroupUpdateDto): Promise<SingleResponse<GroupEntity>> {
     const { id } = payload;
     const objectId: ObjectId = new ObjectId(id);
-    const TemplatePortion: GroupEntity = await this.groupRepo.findOne({
+    const GroupPortion: GroupEntity = await this.groupRepo.findOne({
       where: { _id: objectId },
     });
 
-    if (!TemplatePortion) {
-      throw new NotFoundException(`Template with ID ${id} not found`);
+    if (!GroupPortion) {
+      throw new NotFoundException(`Group with ID ${id} not found`);
     }
     try {
-      Object.entries(TemplatePortion).forEach(([key, value]) => {
-        TemplatePortion[key] = payload[key] || value;
+      Object.entries(GroupPortion).forEach(([key, value]) => {
+        GroupPortion[key] = payload[key] || value;
       });
-      return { result: await this.groupRepo.save(TemplatePortion) };
+      return { result: await this.groupRepo.save(GroupPortion) };
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to update the Template Portion',
+          message: 'Failed to update the group',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -114,7 +114,7 @@ export class GroupService {
     });
 
     if (!teacher) {
-      throw new NotFoundException('Teacher not found');
+      throw new NotFoundException('Group not found');
     }
 
     teacher.deleted_at = new Date();

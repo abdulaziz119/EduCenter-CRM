@@ -1,7 +1,6 @@
 import {
   IsDateString,
   IsDefined,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -15,45 +14,68 @@ export class TeacherCreateDto {
   @MinLength(2)
   @MaxLength(50)
   first_name: string;
+
   @IsDefined()
   @IsString()
   @MinLength(2)
   @MaxLength(50)
   last_name: string;
+
   @IsDefined()
   @IsNumber()
   phone: number;
+
   @IsDefined()
   @IsString()
+  @MinLength(8)
+  @MaxLength(100)
+  password: string;
+
+  @IsDefined()
+  @IsDateString()
   birthDate: Date;
+
   @IsOptional()
   @IsString()
-  groupId: string;
+  groupId?: string;
 }
 
 export class TeacherUpdateDto {
   @IsDefined()
   @IsString()
   id: string;
+
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  first_name: string;
+  @MinLength(2)
+  @MaxLength(50)
+  first_name?: string;
+
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  last_name: string;
+  @MinLength(2)
+  @MaxLength(50)
+  last_name?: string;
+
   @IsOptional()
   @IsNumber()
-  @IsNotEmpty()
-  phone: number;
-  @IsOptional()
-  @IsDateString()
-  birthDate: Date;
+  phone?: number;
+
   @IsOptional()
   @IsString()
-  groupId: string;
+  @MinLength(8)
+  @MaxLength(100)
+  password?: string;
+
+  @IsOptional()
+  @IsDateString()
+  birthDate?: string;
+
+  @IsOptional()
+  @IsString()
+  groupId?: string;
 }
+
 export interface SingleResponse<T> {
   result: T;
 }

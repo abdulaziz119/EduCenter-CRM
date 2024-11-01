@@ -33,19 +33,19 @@ export class TimetableService {
     const teacherObjectId: ObjectId = new ObjectId(payload.teacherId);
     const groupObjectId: ObjectId = new ObjectId(payload.groupId);
 
-    const GroupModel: TimetableEntity = new TimetableEntity();
-    GroupModel.date = payload.date;
-    GroupModel.startTime = payload.startTime;
-    GroupModel.endTime = payload.endTime;
-    GroupModel.courseId = courseObjectId;
-    GroupModel.teacherId = teacherObjectId;
-    GroupModel.groupId = groupObjectId;
+    const TimetableModel: TimetableEntity = new TimetableEntity();
+    TimetableModel.date = payload.date;
+    TimetableModel.startTime = payload.startTime;
+    TimetableModel.endTime = payload.endTime;
+    TimetableModel.courseId = courseObjectId;
+    TimetableModel.teacherId = teacherObjectId;
+    TimetableModel.groupId = groupObjectId;
     try {
-      return { result: await this.timetableRepo.save(GroupModel) };
+      return { result: await this.timetableRepo.save(TimetableModel) };
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to create a Teacher',
+          message: 'Failed to create a timetable entry',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -78,13 +78,13 @@ export class TimetableService {
     const { id } = body;
     try {
       const objectId: ObjectId = new ObjectId(id);
-      const teacher: TimetableEntity = await this.timetableRepo.findOne({
+      const timetable: TimetableEntity = await this.timetableRepo.findOne({
         where: { _id: objectId },
       });
-      if (!teacher) {
-        throw new NotFoundException(`Teacher with ID ${id} not found`);
+      if (!timetable) {
+        throw new NotFoundException(`Timetable entry with ID ${id} not found`);
       }
-      return { result: teacher };
+      return { result: timetable };
     } catch (error) {
       throw new HttpException(
         { message: `Failed get with ID ${id}`, error: error.detail },
@@ -98,22 +98,22 @@ export class TimetableService {
   ): Promise<SingleResponse<TimetableEntity>> {
     const { id } = payload;
     const objectId: ObjectId = new ObjectId(id);
-    const TemplatePortion: TimetableEntity = await this.timetableRepo.findOne({
+    const TimetablePortion: TimetableEntity = await this.timetableRepo.findOne({
       where: { _id: objectId },
     });
 
-    if (!TemplatePortion) {
-      throw new NotFoundException(`Template with ID ${id} not found`);
+    if (!TimetablePortion) {
+      throw new NotFoundException(`Timetable entry with ID ${id} not found`);
     }
     try {
-      Object.entries(TemplatePortion).forEach(([key, value]) => {
-        TemplatePortion[key] = payload[key] || value;
+      Object.entries(TimetablePortion).forEach(([key, value]) => {
+        TimetablePortion[key] = payload[key] || value;
       });
-      return { result: await this.timetableRepo.save(TemplatePortion) };
+      return { result: await this.timetableRepo.save(TimetablePortion) };
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to update the Template Portion',
+          message: 'Failed to update the timetable entry',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -124,15 +124,15 @@ export class TimetableService {
   async delete(payload: ParamIdDto): Promise<void> {
     const { id } = payload;
     const objectId: ObjectId = new ObjectId(id);
-    const teacher: TimetableEntity = await this.timetableRepo.findOne({
+    const timetable: TimetableEntity = await this.timetableRepo.findOne({
       where: { _id: objectId },
     });
 
-    if (!teacher) {
-      throw new NotFoundException('Teacher not found');
+    if (!timetable) {
+      throw new NotFoundException('Timetable entry not found');
     }
 
-    teacher.deleted_at = new Date();
-    await this.timetableRepo.save(teacher);
+    timetable.deleted_at = new Date();
+    await this.timetableRepo.save(timetable);
   }
 }

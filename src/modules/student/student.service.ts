@@ -19,6 +19,7 @@ import {
   StudentUpdateDto,
 } from './dto/student.dto';
 import { StudentEntity } from '../../entity/student.entity';
+import { Md5 } from 'ts-md5';
 
 @Injectable()
 export class StudentService {
@@ -30,12 +31,14 @@ export class StudentService {
   async create(
     payload: StudentCreateDto,
   ): Promise<SingleResponse<{ id: ObjectId; token: string }>> {
+    payload.password = Md5.hashStr(payload.password);
     const objectId: ObjectId = new ObjectId(payload.groupId);
     const StudentModel: StudentEntity = new StudentEntity();
     StudentModel.first_name = payload.first_name;
     StudentModel.last_name = payload.last_name;
     StudentModel.birthDate = payload.birthDate;
     StudentModel.phone = payload.phone;
+    StudentModel.password = payload.password;
     StudentModel.groupId = objectId;
     StudentModel.isPaid = payload.isPaid;
     try {
@@ -44,18 +47,14 @@ export class StudentService {
       const user: { _id: ObjectId; phone: number; type: string } = {
         _id: savedStudent._id,
         phone: savedStudent.phone,
-        type: 'teacher',
+        type: 'student',
       };
       const token: string = await AuthorizationService.sign(user);
-      const result: { id: ObjectId; token: string } = {
-        id: savedStudent._id,
-        token: token,
-      };
-      return { result: result };
+      return { result: { id: savedStudent._id, token } };
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to create a Teacher',
+          message: 'Failed to create a Student',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -87,17 +86,17 @@ export class StudentService {
   async findOne(body: ParamIdDto): Promise<SingleResponse<StudentEntity>> {
     const { id } = body;
     try {
-      const objectId = new ObjectId(id);
-      const student = await this.studentRepo.findOne({
+      const objectId: ObjectId = new ObjectId(id);
+      const student: StudentEntity = await this.studentRepo.findOne({
         where: { _id: objectId },
       });
       if (!student) {
-        throw new NotFoundException(`Teacher with ID ${id} not found`);
+        throw new NotFoundException(`Student with ID ${id} not found`);
       }
       return { result: student };
     } catch (error) {
       throw new HttpException(
-        { message: `Failed get with ID ${id}`, error: error.detail },
+        { message: `Student with ID ${id} not found`, error: error.detail },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -107,13 +106,13 @@ export class StudentService {
     payload: StudentUpdateDto,
   ): Promise<SingleResponse<StudentEntity>> {
     const { id } = payload;
-    const objectId = new ObjectId(id);
-    const StudentModel = await this.studentRepo.findOne({
+    const objectId: ObjectId = new ObjectId(id);
+    const StudentModel: StudentEntity = await this.studentRepo.findOne({
       where: { _id: objectId },
     });
 
     if (!StudentModel) {
-      throw new NotFoundException(`Template with ID ${id} not found`);
+      throw new NotFoundException(`Student with ID ${id} not found`);
     }
     try {
       Object.entries(StudentModel).forEach(([key, value]) => {
@@ -123,7 +122,7 @@ export class StudentService {
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to update the Template Portion',
+          message: 'Failed to update the Student',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -131,18 +130,18 @@ export class StudentService {
     }
   }
 
-  async delete(payload: ParamIdDto): Promise<any> {
+  async delete(payload: ParamIdDto): Promise<void> {
     const { id } = payload;
-    const objectId = new ObjectId(id);
-    const student = await this.studentRepo.findOne({
-      where: { _id: objectId },
-    });
+    const objectId: ObjectId = new ObjectId(id);
 
-    if (!student) {
-      throw new NotFoundException('Teacher not found');
+    try {
+      const student: StudentEntity = await this.studentRepo.findOneOrFail({
+        where: { _id: objectId },
+      });
+      student.deleted_at = new Date();
+      await this.studentRepo.save(student);
+    } catch (error) {
+      throw new NotFoundException(`Student with ID ${id} not found`);
     }
-
-    student.deleted_at = new Date();
-    await this.studentRepo.save(student);
   }
 }

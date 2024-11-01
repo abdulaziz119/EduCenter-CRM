@@ -19,6 +19,7 @@ import { ObjectId } from 'mongodb';
 import { ParamIdDto } from '../../utils/dto/params.dto';
 import { PaginateParamsDto } from '../../utils/dto/paginate.dto';
 import { AuthorizationService } from '../auth/auth.service';
+import { Md5 } from 'ts-md5';
 
 @Injectable()
 export class TeacherService {
@@ -30,11 +31,13 @@ export class TeacherService {
   async create(
     payload: TeacherCreateDto,
   ): Promise<SingleResponse<{ id: ObjectId; token: string }>> {
+    payload.password = Md5.hashStr(payload.password);
     const objectId: ObjectId = new ObjectId(payload.groupId);
     const TeacherModel: TeacherEntity = new TeacherEntity();
     TeacherModel.first_name = payload.first_name;
     TeacherModel.last_name = payload.last_name;
     TeacherModel.birthDate = payload.birthDate;
+    TeacherModel.password = payload.password;
     TeacherModel.phone = payload.phone;
     TeacherModel.groupId = objectId;
     try {
@@ -46,11 +49,7 @@ export class TeacherService {
         type: 'teacher',
       };
       const token: string = await AuthorizationService.sign(user);
-      const result: { id: ObjectId; token: string } = {
-        id: savedTeacher._id,
-        token: token,
-      };
-      return { result: result };
+      return { result: { id: savedTeacher._id, token } };
     } catch (error) {
       throw new HttpException(
         {
@@ -107,22 +106,22 @@ export class TeacherService {
   ): Promise<SingleResponse<TeacherEntity>> {
     const { id } = payload;
     const objectId: ObjectId = new ObjectId(id);
-    const TemplatePortion: TeacherEntity = await this.teacherRepo.findOne({
+    const TeacherPortion: TeacherEntity = await this.teacherRepo.findOne({
       where: { _id: objectId },
     });
 
-    if (!TemplatePortion) {
+    if (!TeacherPortion) {
       throw new NotFoundException(`Template with ID ${id} not found`);
     }
     try {
-      Object.entries(TemplatePortion).forEach(([key, value]) => {
-        TemplatePortion[key] = payload[key] || value;
+      Object.entries(TeacherPortion).forEach(([key, value]) => {
+        TeacherPortion[key] = payload[key] || value;
       });
-      return { result: await this.teacherRepo.save(TemplatePortion) };
+      return { result: await this.teacherRepo.save(TeacherPortion) };
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Failed to update the Template Portion',
+          message: 'Failed to update the Teacher',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -130,18 +129,18 @@ export class TeacherService {
     }
   }
 
-  async delete(payload: ParamIdDto): Promise<any> {
+  async delete(payload: ParamIdDto): Promise<void> {
     const { id } = payload;
     const objectId: ObjectId = new ObjectId(id);
-    const teacher: TeacherEntity = await this.teacherRepo.findOne({
-      where: { _id: objectId },
-    });
 
-    if (!teacher) {
-      throw new NotFoundException('Teacher not found');
+    try {
+      const teacher: TeacherEntity = await this.teacherRepo.findOneOrFail({
+        where: { _id: objectId },
+      });
+      teacher.deleted_at = new Date();
+      await this.teacherRepo.save(teacher);
+    } catch (error) {
+      throw new NotFoundException(`Teacher with ID ${id} not found`);
     }
-
-    teacher.deleted_at = new Date();
-    await this.teacherRepo.save(teacher);
   }
 }
