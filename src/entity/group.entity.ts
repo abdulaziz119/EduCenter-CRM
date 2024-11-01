@@ -7,6 +7,9 @@ export class GroupEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ nullable: true })
-  courses: ObjectId;
+  @Column({ type: 'boolean', default: true })
+  isActive: boolean;
+
+  @Column()
+  courseId: ObjectId;
 }

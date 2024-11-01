@@ -9,6 +9,12 @@ export class CourseEntity extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   description?: string;
 
-  @Column({ type: 'decimal', nullable: true })
+  @Column({ type: 'integer', nullable: true })
   monthlyFee?: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  duration?: string;
+
+  @Column({ type: 'boolean', default: true })
+  isActive: boolean;
 }

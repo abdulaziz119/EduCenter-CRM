@@ -1,26 +1,26 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
-import { TeacherService } from './teacher.service';
 import { TeacherEntity } from '../../entity/teacher.entity';
-import {
-  SingleResponse,
-  TeacherCreateDto,
-  TeacherUpdateDto,
-} from './dto/teacher.dto';
 import { PaginateParamsDto } from '../../utils/dto/paginate.dto';
 import { PaginationResponse } from '../../utils/pagination.response';
 import { ParamIdDto } from '../../utils/dto/params.dto';
+import { StudentService } from './student.service';
+import {
+  SingleResponse,
+  StudentCreateDto,
+  StudentUpdateDto,
+} from './dto/student.dto';
 import { ObjectId } from 'mongodb';
 
-@Controller('/teacher')
-export class TeacherController {
-  constructor(private readonly teacherService: TeacherService) {}
+@Controller('/student')
+export class StudentController {
+  constructor(private readonly studentService: StudentService) {}
 
   @Post('/register')
   @HttpCode(201)
   async create(
-    @Body() body: TeacherCreateDto,
+    @Body() body: StudentCreateDto,
   ): Promise<SingleResponse<{ id: ObjectId; token: string }>> {
-    return this.teacherService.create(body);
+    return this.studentService.create(body);
   }
 
   @Post('/findAll')
@@ -28,7 +28,7 @@ export class TeacherController {
   async findAll(
     @Body() body: PaginateParamsDto,
   ): Promise<PaginationResponse<TeacherEntity[]>> {
-    return await this.teacherService.findAll(body);
+    return await this.studentService.findAll(body);
   }
 
   @Post('/findOne')
@@ -36,20 +36,20 @@ export class TeacherController {
   async findOne(
     @Body() body: ParamIdDto,
   ): Promise<SingleResponse<TeacherEntity>> {
-    return this.teacherService.findOne(body);
+    return this.studentService.findOne(body);
   }
 
   @Post('/update')
   @HttpCode(202)
   async update(
-    @Body() body: TeacherUpdateDto,
+    @Body() body: StudentUpdateDto,
   ): Promise<SingleResponse<TeacherEntity>> {
-    return this.teacherService.update(body);
+    return this.studentService.update(body);
   }
 
   @Post('/remove')
   @HttpCode(204)
   async delete(@Body() body: ParamIdDto): Promise<any> {
-    return this.teacherService.delete(body);
+    return this.studentService.delete(body);
   }
 }

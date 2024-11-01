@@ -10,7 +10,7 @@ export class TeacherEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   last_name: string;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', unique: true })
   phone: number;
 
   @Column({ type: 'varchar' })

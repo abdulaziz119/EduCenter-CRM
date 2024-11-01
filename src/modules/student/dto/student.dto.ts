@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsDateString,
   IsDefined,
   IsNotEmpty,
@@ -9,7 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class TeacherCreateDto {
+export class StudentCreateDto {
   @IsDefined()
   @IsString()
   @MinLength(2)
@@ -29,9 +30,12 @@ export class TeacherCreateDto {
   @IsOptional()
   @IsString()
   groupId: string;
+  @IsDefined()
+  @IsBoolean()
+  isPaid: boolean;
 }
 
-export class TeacherUpdateDto {
+export class StudentUpdateDto {
   @IsDefined()
   @IsString()
   id: string;
@@ -53,6 +57,9 @@ export class TeacherUpdateDto {
   @IsOptional()
   @IsString()
   groupId: string;
+  @IsOptional()
+  @IsBoolean()
+  isPaid: boolean;
 }
 export interface SingleResponse<T> {
   result: T;

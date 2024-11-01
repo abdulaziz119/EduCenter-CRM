@@ -10,7 +10,7 @@ const DB_PASS = process.env.DB_PASSWORD || '';
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Xato tekshirish
-if (!DB_HOST || !DB_USER || !DB_DB || !DB_PASS) {
+if (!DB_HOST || !DB_USER || !DB_DB || !DB_PASS || !JWT_SECRET) {
   throw new Error(
     'One of the environmental variables is missing. Please check the .env file.',
   );

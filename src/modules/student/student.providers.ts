@@ -1,12 +1,12 @@
 import { EDUCATION_SOURCE, MODELS } from '../../constants';
 import { DataSource } from 'typeorm';
-import { CourseEntity } from '../../entity/course.entity';
+import { StudentEntity } from '../../entity/student.entity';
 
-export const courseProviders = [
+export const studentProviders = [
   {
-    provide: MODELS.COURSES,
+    provide: MODELS.STUDENTS,
     useFactory: (dataSource: DataSource) =>
-      dataSource.getRepository(CourseEntity),
+      dataSource.getRepository(StudentEntity),
     inject: [EDUCATION_SOURCE],
   },
 ];
